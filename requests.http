@@ -1,0 +1,6 @@
+### Get request
+GET http://localhost:8080/
+
+
+### Get count
+GET http://localhost:8080/count
