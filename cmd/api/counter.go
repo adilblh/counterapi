@@ -1,4 +1,4 @@
-package counter
+package main
 
 import (
 	"sync"
@@ -9,10 +9,11 @@ type WindowCounter struct {
 	requets    map[int64]int
 	mu         sync.Mutex
 	windowSize time.Duration
+	repo       CounterRepository
 }
 
-func NewWindowCounter(ws time.Duration) *WindowCounter {
-	return &WindowCounter{requets: make(map[int64]int), windowSize: ws}
+func NewWindowCounter(repository CounterRepository, ws time.Duration) *WindowCounter {
+	return &WindowCounter{repo: repository, requets: make(map[int64]int), windowSize: ws}
 }
 
 func (wc *WindowCounter) IncrementCount() {
@@ -24,6 +25,7 @@ func (wc *WindowCounter) IncrementCount() {
 
 	// clean old requests
 	wc.cleanOldreqs()
+	wc.repo.Save(wc.requets)
 }
 
 func (wc *WindowCounter) cleanOldreqs() {
@@ -34,16 +36,21 @@ func (wc *WindowCounter) cleanOldreqs() {
 	}
 }
 
-func (wc *WindowCounter) Count() int {
+func (wc *WindowCounter) Count() (int, error) {
 	wc.mu.Lock()
 	defer wc.mu.Unlock()
 
+	reqs, err := wc.repo.Get()
+	if err != nil {
+		return -1, err
+	}
+
 	reqCount := 0
-	for timeStamp, count := range wc.requets {
+	for timeStamp, count := range reqs {
 		if time.Unix(timeStamp, 0).Add(wc.windowSize).After(time.Now()) {
 			reqCount += count
 		}
 	}
 
-	return reqCount
+	return reqCount, nil
 }
