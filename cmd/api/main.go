@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	windowSize = time.Second * 60
+	windowSize = time.Second * 20
 	dataFile   = "counter_storage.gob"
 )
 
@@ -23,9 +23,11 @@ func NewApplication(wincowCounter *WindowCounter, logger *slog.Logger) *Applicat
 
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-
 	repository := NewFileStorage(dataFile)
-	windowCounter := NewWindowCounter(repository, windowSize)
+
+	windowCounter := NewWindowCounter(repository, windowSize, logger)
+	defer windowCounter.Close()
+
 	app := NewApplication(windowCounter, logger)
 
 	http.HandleFunc("GET /", app.HandleRequest)

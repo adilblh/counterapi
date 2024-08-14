@@ -26,6 +26,13 @@ func (app *Application) writeJSON(w http.ResponseWriter, status int, data envelo
 	return nil
 }
 
+func (app *Application) serverErrorResponse(w http.ResponseWriter, err error) {
+	app.logger.Error(err.Error())
+
+	message := "the server encountered an issue and was unable to process your request."
+	app.errorResponse(w, http.StatusInternalServerError, message)
+}
+
 func (app *Application) errorResponse(w http.ResponseWriter, status int, message any) {
 	env := envelope{"error": message}
 
