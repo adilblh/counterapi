@@ -53,7 +53,6 @@ func (wc *WindowCounter) periodicCleanAndSave() {
 			return
 		}
 	}
-
 }
 
 func (wc *WindowCounter) cleanOldRequests() {

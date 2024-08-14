@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	windowSize = time.Second * 20
+	windowSize = time.Second * 60
 	dataFile   = "counter_storage.gob"
+	port       = "8080"
 )
 
 type Application struct {
@@ -33,6 +34,7 @@ func main() {
 	http.HandleFunc("GET /", app.HandleRequest)
 	http.HandleFunc("GET /count", app.HandleCount)
 
-	logger.Info("Server running on port :8080")
-	http.ListenAndServe(":8080", nil)
+	address := ":" + port
+	app.logger.Info("Server running", "port", port)
+	http.ListenAndServe(address, nil)
 }
