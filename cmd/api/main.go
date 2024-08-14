@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	windowSize = time.Second * 20
+	windowSize = time.Second * 60
 	dataFile   = "counter_storage.gob"
 )
 
